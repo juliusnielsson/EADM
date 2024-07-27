@@ -3,5 +3,6 @@ node_modules
 *~
 .DS_Store
 coverage
+eslint.config.mjs
 # put any other files you don't want to check in here, such as .DS_Store
 # (OSX), *.bak, etc.
