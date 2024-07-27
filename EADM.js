@@ -2,13 +2,13 @@ const express = require('express')
 const { engine } = require('express-handlebars')
 const bodyParser = require('body-parser')
 const multiparty = require('multiparty')
-//const cookieParser = require('cookie-parser')  
+const cookieParser = require('cookie-parser')  
 const handlers = require('./lib/handlers')
-//const { credentials } = require('./config')
+const { credentials } = require('./config')
 const weatherMiddlware = require('./lib/middleware/weather')
 const quoteMiddleware = require('./lib/middleware/quotes')
-//const expressSession = require('express-session')
-//const flashMiddleware = require('./lib/middleware/flash')
+const expressSession = require('express-session')
+const flashMiddleware = require('./lib/middleware/flash')
 
 
 const app = express()
@@ -29,6 +29,12 @@ app.engine('handlebars', engine({
 
     app.set('view engine', 'handlebars')
 
+app.use(expressSession({
+        resave: false,
+        saveUninitialized: false,
+        secret: credentials.cookieSecret,
+       }))
+
     app.use(bodyParser.urlencoded({ extended: true }))
     app.use(bodyParser.json())
     
@@ -39,6 +45,8 @@ app.engine('handlebars', engine({
     app.use(weatherMiddlware)
     app.use(quoteMiddleware)
     
+    app.use(cookieParser(credentials.cookieSecret))
+    app.use(flashMiddleware)
     app.get('/', handlers.home)
     app.get('/about', handlers.about)
     // handlers for browser-based form submission
@@ -82,3 +90,10 @@ app.engine('handlebars', engine({
     } else {
       module.exports = app
     }
+
+/*const monster = req.cookies.monster
+const signedMonster = req.signedCookies.signed_monster
+
+res.cookie('monster', 'nom nom')
+res.cookie('signed_monster', 'nom nom', { signed: true })
+*/
